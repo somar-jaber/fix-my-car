@@ -1,0 +1,10 @@
+Implement password hashing. done
+Remember to protect the users route so not any one can register on the system. done
+Automate the visit_times increament , the id_number ,and the final_cost in the repairs.js in POSTING and PUTTING. done
+On deleting remeber to decrease the visit_times for the car and to remove the repair id from the workers and the cars. done
+Don't forget to populate repqirs in both Cars and Workers routers.
+Apply the log out operation in the front-end by deleting the user token. 
+Don't forget to add super user to the app so you can add admins.  
+
+
+MongooseServerSelectionError
