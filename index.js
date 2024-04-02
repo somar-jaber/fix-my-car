@@ -6,7 +6,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 
-let connectionString = "mongodb://127.0.0.1:27017/fix_my_car?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.4";
+let connectionString = "mongodb+srv://cluster0.lspqjtf.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority&appName=Cluster0";
 
 
 // Create a new logger instance
