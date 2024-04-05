@@ -76,6 +76,15 @@ app.use("/api/repairs", repairs.router);
 const loggingMiddleware = require("./middlewares/loggingMiddleware");
 app.use(loggingMiddleware);
 
+app.get("/", (req, res) => {
+    return "Welcome to fix-my-car webApp";  
+});
+
+app.get("/api", (req, res) => {
+    return "fix-my-car API";
+});
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`));
