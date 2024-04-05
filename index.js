@@ -6,7 +6,8 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 
-let connectionString = "mongodb+srv://fix_my_car:fix-my_car@cluster0.lspqjtf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// EX : mongodb://[username:password@]host1[:port1],host2[:port2],...[,hostN[:portN]][/<database>][?options]
+let connectionString = "mongodb://mo2695_fixMyCar:5626258bncv564somarJ@91.185.189.19:27017/mo2695_fixMyCar";
 
 
 // Create a new logger instance
