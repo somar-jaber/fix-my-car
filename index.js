@@ -77,11 +77,11 @@ const loggingMiddleware = require("./middlewares/loggingMiddleware");
 app.use(loggingMiddleware);
 
 app.get("/", (req, res) => {
-    return "Welcome to fix-my-car webApp";  
+    res.send("Welcome to fix-my-car webApp");  
 });
 
 app.get("/api", (req, res) => {
-    return "fix-my-car API";
+    res.send("fix-my-car API");
 });
 
 
