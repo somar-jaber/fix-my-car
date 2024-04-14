@@ -7,7 +7,7 @@ const express = require("express");
 const router = express.Router();
 
 const cors = require("cors");
-app.use(cors());
+router.use(cors());
 
 
 // This is for authenticating users. Registering new users in users.js rout
