@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 const morgan = require("morgan");
+const cors = require("cors");
 
 // EX : mongodb://[username:password@]host1[:port1],host2[:port2],...[,hostN[:portN]][/<database>][?options]
 let connectionString = "mongodb://mo2695_fixMyCar:5626258bncv564somarJ@91.185.189.19:27017/mo2695_fixMyCar";
@@ -52,6 +53,7 @@ mongoose.connect(connectionString, {useNewUrlParser: true})
 // middlewares
 app.use(express.json({extended: true}));
 app.use(morgan('tiny'));
+app.use(cors());
 
 
 // routes
