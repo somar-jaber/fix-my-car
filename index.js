@@ -53,7 +53,11 @@ mongoose.connect(connectionString, {useNewUrlParser: true})
 // middlewares
 app.use(express.json({extended: true}));
 app.use(morgan('tiny'));
-app.use(cors());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+// app.use(cors());
 
 
 // routes
