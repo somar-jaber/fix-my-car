@@ -6,9 +6,6 @@ const {UserModel} = require("../models/user");
 const express = require("express");
 const router = express.Router();
 
-const cors = require("cors");
-router.use(cors());
-
 
 // This is for authenticating users. Registering new users in users.js rout
 router.post("/", async(req, res) => {

@@ -51,17 +51,18 @@ mongoose.connect(connectionString, {useNewUrlParser: true})
     .catch((err) => {console.log("Couldn't connect to mongoDB, Error:\n", err)});
 
 // middlewares
+app.use(cors());
 app.use(express.json({extended: true}));
 app.use(morgan('tiny'));
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
 });
-// app.use(cors());
 
 
 // routes
 const users = require("./routes/users");
+app.options('*', cors()) // include before other routes
 app.use("/api/users", users.router);
 
 const auth = require("./routes/auth");
