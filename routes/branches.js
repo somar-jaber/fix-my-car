@@ -1,3 +1,4 @@
+const adminMiddleware = require("../middlewares/adminMiddleware");
 const asyncTryCatch = require("../middlewares/asyncTryCatch");
 const { authMiddleware } = require("../middlewares/authMiddleware");
 const {validateBranch, BranchModel} = require("../models/branch");
@@ -18,7 +19,7 @@ router.get("/:id", authMiddleware, asyncTryCatch(async(req, res) => {
 }));
 
 
-router.post("/", authMiddleware, asyncTryCatch(async(req, res) => {
+router.post("/", [authMiddleware, adminMiddleware] , asyncTryCatch(async(req, res) => {
     let result = validateBranch(req.body);
     if (result.error) return res.status(404).send(`404 Bad Request: ${result.error.details[0].message}`);
 
@@ -37,7 +38,7 @@ router.post("/", authMiddleware, asyncTryCatch(async(req, res) => {
 }));
 
 
-router.put("/:id", authMiddleware, asyncTryCatch(async(req, res) => {
+router.put("/:id", [authMiddleware, adminMiddleware], asyncTryCatch(async(req, res) => {
     let result = validateBranch(req.body);
     if (result.error) return res.status(400).send(`400 Bad Request: ${result.error.details[0].message}`); 
 
@@ -60,7 +61,7 @@ router.put("/:id", authMiddleware, asyncTryCatch(async(req, res) => {
 }));
 
 
-router.delete("/:id", authMiddleware, asyncTryCatch(async(req, res) => {
+router.delete("/:id", [authMiddleware, adminMiddleware], asyncTryCatch(async(req, res) => {
     const branchSample = await BranchModel.findByIdAndRemove(req.params.id);
     if (!branchSample)
         return res.status(404).send("404 Not found");

@@ -1,0 +1,34 @@
+Always remember when you want to user the adminMiddleware use before it the authMiddleware. 
+
+passwords are : {
+    omaralmasri
+    monzermonzer
+    somarjaber
+}
+
+
+------
+router.get("/", authMiddleware.authMiddleware, asyncTryCatch(async(req, res) => {
+    // this will only show the user's branch inside the car's branches field
+    let cars = await CarModel.find().populate({
+        path: 'branches',
+        model: 'Branch', // if the model is not in the same file we need to mention it in the "model" filed
+        match: { _id: req.user.branch }
+    });
+
+    // this will exclude the cars which didn't visit the user's branch
+    cars = cars.filter(car => car.branches.length != 0 );
+
+    return res.send(cars);
+}));
+
+// but what we want for the user is to see the car's visited branches if it is already visited his branch
+// so for that we must use :
+/*
+    // if the car didn't visit the user branch so they are not allowed to see its info
+    if (!carSample.branches.includes(req.user.branch))
+        return res.stauts(400).send("400 Bad Request: You are not allowed to see this car's info");
+    // other wise they can see all the info
+*/
+
+---

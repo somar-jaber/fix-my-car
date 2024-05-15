@@ -3,6 +3,7 @@ const argon2 = require("argon2");
 const {validateUser, UserModel} = require("../models/user");
 const express = require("express");
 const { authMiddleware } = require("../middlewares/authMiddleware");
+const adminMiddleware = require("../middlewares/adminMiddleware");
 const router = express.Router();
 
 
@@ -46,6 +47,12 @@ router.get("/me", authMiddleware, asyncTryCath(async(req, res) => {
         .select("-password")
         .populate({ path: "workerId", populate: {path: "branch", model: "Branch"} });  // this will populate the workerId path and the branch path inside the workerId  
     return res.send(userSample);
+}));
+
+router.get("/", [authMiddleware, adminMiddleware], asyncTryCath(async(req, res) => {
+    const userSamples = await UserModel.find();
+    return res.send(userSamples);
+    
 }));
 
 module.exports.router = router;

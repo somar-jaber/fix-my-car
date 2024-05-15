@@ -14,15 +14,34 @@ let counter = 1;
 
 
 router.get("/", authMiddleware, asyncTryCath(async(req, res) => {
-    const repairs = await RepairModel.find();
+    let repairs = await RepairModel.find();
+
+    if (!req.user.isAdmin)
+    {
+        // check if the repair had been published from the user's branch
+        repairs = repairs.filter(repair => repair.publishedFrom == req.user.branch);
+    }
+
+    repairs = await RepairModel.populate(repairs, {
+        path: "publishedFrom",
+        model: "Branch", // if the model is not in the same file we need to mention it in the "model" filed
+    });
+
     return res.send(repairs);
 }));
 
 
 
 router.get("/:id", authMiddleware, asyncTryCath(async(req, res) => {
-    const repairSample = await RepairModel.findById(req.params.id);
+    let repairSample = await RepairModel.findById(req.params.id);
     if (!repairSample)  return res.status(404).send("404 Not Found: the repair Id not found");
+    
+    if (!req.user.isAdmin)
+        if (repairSample.publishedFrom != req.user.branch)
+            return res.status(403).send("403 Forbidden: You are no allowed to access this repair");
+    
+    repairSample = await RepairModel.populate(repairSample, "publishedFrom");
+    
     return res.send(repairSample);
 }));
 
@@ -50,7 +69,7 @@ router.post("/", authMiddleware, async(req, res) => {
         carSample.set({
             repairs: carSample.repairs.push(repairSample._id.toString()),
         })
-        because the push method applys the change directly and then you are assigning the array itself to 'repairs' which will cause a validation error  
+        because the push method applys the changes directly. but here you are applying changes and then you are assigning the array itself to 'repairs' which will cause a validation error  
     */
     carSample.repairs.push(repairSample._id.toString()); // to send just the id string not the ObjectId itself
     carSample.visit_times += 1;
@@ -108,6 +127,10 @@ router.put("/:id", authMiddleware, asyncTryCath(async (req, res) => {
     const repairSample = await RepairModel.findById(req.params.id);
     if (!repairSample) return res.status(404).send("404 Not Found : the Repair Id not found"); 
 
+    if (!req.user.isAdmin)
+        if (repairSample.publishedFrom != req.user.branch)
+            return res.status(403).send("403 Forbidden: You are no allowed to access this repair");
+
     if ( req.user.isAdmin ) {
         repairSample.set({
             id_number: req.body.id_number || repairSample.id_number,
@@ -153,6 +176,10 @@ router.put("/:id", authMiddleware, asyncTryCath(async (req, res) => {
 router.delete("/:id", authMiddleware, asyncTryCath(async(req, res) => {
     const repairSample = await RepairModel.findById(req.params.id);
     if (!repairSample) return res.status(404).send("404 Not Found : the repair Id not found");
+
+    if (!req.user.isAdmin)
+        if (repairSample.publishedFrom != req.user.branch)
+            return res.status(403).send("403 Forbidden: You are no allowed to access this repair");
 
     const carSample = await CarModel.findById(repairSample.car);
     if (!carSample) return res.status(404).send("404 Not Found : the Car Id is not founded");
