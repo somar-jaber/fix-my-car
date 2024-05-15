@@ -44,16 +44,31 @@ module.exports.post = async(req, res) => {
     let result = validateWorker(req.body);
     if (result.error) return res.status(400).send(`400 Bad Request: ${result.error.details[0].message}`);
 
-    const workerSample = new WorkerModel({
-        f_name: req.body.f_name,
-        l_name: req.body.l_name,
-        birthdate: req.body.birthdate,
-        hiredate: req.body.hiredate,
-        role: req.body.role,
-        salary: req.body.salary,
-        phone: req.body.phone,
-        branch: req.body.branch,
-    });
+    if (req.user.isAdmin)
+    {
+        const workerSample = new WorkerModel({
+            f_name: req.body.f_name,
+            l_name: req.body.l_name,
+            birthdate: req.body.birthdate,
+            hiredate: req.body.hiredate,
+            role: req.body.role,
+            salary: req.body.salary,
+            phone: req.body.phone,
+            branch: req.user.branch,
+        });
+    }
+    else {
+        const workerSample = new WorkerModel({
+            f_name: req.body.f_name,
+            l_name: req.body.l_name,
+            birthdate: req.body.birthdate,
+            hiredate: req.body.hiredate,
+            role: req.body.role,
+            salary: req.body.salary,
+            phone: req.body.phone,
+            branch: req.body.branch || req.user.branch,
+        });
+    }
 
     try {
         await workerSample.save();
