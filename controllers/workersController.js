@@ -55,7 +55,7 @@ module.exports.post = async(req, res) => {
             role: req.body.role,
             salary: req.body.salary,
             phone: req.body.phone,
-            branch: req.user.branchh,
+            branch: req.user.branch,
         };
     }
     else {
@@ -70,6 +70,10 @@ module.exports.post = async(req, res) => {
             branch: req.body.branch || req.user.branch,
         };
     }
+
+    // checking if the branch is exists
+    const branchSample = await BranchModel.findById(workerObject.branch);
+    if (!branchSample) return res.status(404).send("404 Not Found : the Branch Id is not exist");
 
     const workerSample = new WorkerModel(workerObject);
 
@@ -106,6 +110,10 @@ module.exports.put = async (req, res) => {
         branch: req.body.branch || workerSample.branch,
         // repairs are automated , to add or remove one of them delete or add the worker name in a repair object(record).
     });
+
+    // checking if the branch is exists
+    const branchSample = await BranchModel.findById(workerSample.branch);
+    if (!branchSample) return res.status(404).send("404 Not Found : the Branch Id is not exist");
 
     try {
         await workerSample.save();
