@@ -10,7 +10,7 @@ const cors = require("cors");
 // to connect locally : let connectionString = "mongodb://127.0.0.1:27017/fix_my_car?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.4"
 // EX : mongodb://[username:password@]host1[:port1],host2[:port2],...[,hostN[:portN]][/<database>][?options]
 // let connectionString = "mongodb://127.0.0.1:27017/fix_my_car?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+1.10.4"
-let connectionString = "mongodb://mo2695_fixMyCar:5626258bncv564somarJ@91.185.189.19:27017/mo2695_fixMyCar";
+let connectionString = "mongodb://mo2695_fixmycar:5626258bncv564somarJ@91.185.189.19:27017/mo2695_fixMyCar";
 
 
 // Create a new logger instance
