@@ -6,24 +6,23 @@ const  router = express.Router();
 /* UI routes */
 // these roots will be called from the index.html. for that the links starts by "./" because they are in the same level with index.html
 
-
-// It is forbidden to use "../" but we need to go up one file so we have to manipulate the __dirname
-let dir = __dirname.split("\\");
-dir = dir.slice(0, dir.length-1).join("\\");
-
+let dir = path.join(__dirname, '..');
 
 // for cars tabel
 router.get("/cars", authMiddleware, (req, res) => {
-    let filePath = path.join(__dirname, '..', '/views/cars/index.html'); 
-    res.sendFile(filePath);  
+    // We are using the path library to handle the differences between Linux and Windows
+    // let filePath = path.join(__dirname, '..', '/views/cars/index.html'); 
+    res.sendFile("/views/cars/index.html", {root: dir});  
 });
 
 router.get("/cars/insert.html", authMiddleware, (req, res) => {
-    res.sendFile("./views/cars/insert.html" , {root: dir});  
+    let filePath = path.join(__dirname, '..', '/views/cars/insert.html'); 
+    res.sendFile(filePath);    
 });
 
 router.get("/cars/update.html", authMiddleware, (req, res) => {
-    res.sendFile("./views/cars/update.html" , {root: dir});  
+    let filePath = path.join(__dirname, '..', '/views/cars/update.html'); 
+    res.sendFile(filePath);  
 });
 
 
