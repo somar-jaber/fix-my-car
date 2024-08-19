@@ -6,33 +6,32 @@ const  router = express.Router();
 /* UI routes */
 // these roots will be called from the index.html. for that the links starts by "./" because they are in the same level with index.html
 
+
+// We are using the path library to handle the differences between Linux and Windows
 let dir = path.join(__dirname, '..');
+
 
 // for cars tabel
 router.get("/cars", authMiddleware, (req, res) => {
-    // We are using the path library to handle the differences between Linux and Windows
-    // let filePath = path.join(__dirname, '..', '/views/cars/index.html'); 
     res.sendFile("/views/cars/index.html", {root: dir});  
 });
 
 router.get("/cars/insert.html", authMiddleware, (req, res) => {
-    let filePath = path.join(__dirname, '..', '/views/cars/insert.html'); 
-    res.sendFile(filePath);    
+    res.sendFile("/views/cars/insert.html", {root: dir});    
 });
 
 router.get("/cars/update.html", authMiddleware, (req, res) => {
-    let filePath = path.join(__dirname, '..', '/views/cars/update.html'); 
-    res.sendFile(filePath);  
+    res.sendFile("/views/cars/update.html", {root: dir});  
 });
 
 
 // for workers table
 router.get("/workers", authMiddleware, (req, res) => {
-    res.sendFile("./views/workers/index.html" , {root: dir});  
+    res.sendFile("/views/workers/index.html" , {root: dir});  
 });
 
 router.get("/workers/insert.html", authMiddleware, (req, res) => {
-    res.sendFile("./views/workers/insert.html" , {root: dir});  
+    res.sendFile("/views/workers/insert.html" , {root: dir});  
 });
 
 router.get("/workers/update.html", authMiddleware, (req, res) => {
