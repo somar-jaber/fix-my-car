@@ -105,9 +105,9 @@ app.get("/tables-page.html",  authMiddleware, (req, res) => {
     res.sendFile("/views/tables-page.html" , {root: __dirname});  
 });
 
-app.get("/CRUD-page.html",  authMiddleware, (req, res) => {
-    res.sendFile("/views/CRUD-page.html" , {root: __dirname});  
-});
+// app.get("/CRUD-page.html",  authMiddleware, (req, res) => {
+//     res.sendFile("/views/CRUD-page.html" , {root: __dirname});  
+// });
 
 app.get("/insert.html",  authMiddleware, (req, res) => {
     res.sendFile("/views/insert.html" , {root: __dirname});  
