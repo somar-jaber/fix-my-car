@@ -93,24 +93,24 @@ app.use(loggingMiddleware);
 
 
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/views/index.html" , {root: __dirname});  
+    res.sendFile("/views/index.html" , {root: __dirname});  
 });
 
 app.get("/welcome.html", (req, res) => {
-    res.sendFile(__dirname + "/views/welcome.html" , {root: __dirname}); 
+    res.sendFile("/views/welcome.html" , {root: __dirname}); 
 });
 
 // these roots will be called from the index.html. for that the links starts by "./" because they are in the same level with index.html
 app.get("/tables-page.html",  authMiddleware, (req, res) => {
-    res.sendFile(__dirname + "/views/tables-page.html" , {root: __dirname});  
+    res.sendFile("/views/tables-page.html" , {root: __dirname});  
 });
 
 app.get("/CRUD-page.html",  authMiddleware, (req, res) => {
-    res.sendFile(__dirname + "/views/CRUD-page.html" , {root: __dirname});  
+    res.sendFile("/views/CRUD-page.html" , {root: __dirname});  
 });
 
 app.get("/insert.html",  authMiddleware, (req, res) => {
-    res.sendFile(__dirname + "/views/insert.html" , {root: __dirname});  
+    res.sendFile("/views/insert.html" , {root: __dirname});  
 });
 
 app.get("/api", (req, res) => {
