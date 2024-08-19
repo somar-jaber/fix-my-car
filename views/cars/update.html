@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car - Update</title>
+    <!-- CSS fiels -->
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/global-rules.css">
+
+    <link rel="stylesheet" href="./assets/css/insert.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title" ></h1>
+        <h5 class="error" style="color: var(--red);"></h5>
+
+        <div class="inputs-container" >
+            <div>
+                <p class="number" >number</p>
+                <input class="btn" type="text" name="number" />
+            </div>
+
+            <div>
+                <p class="model" >model</p>
+                <input class="btn" type="text" name="model" />
+            </div>
+
+            <div>
+                <p class="owner_phone" >owner_phone</p>
+                <input class="btn" type="text" name="owner_phone"/>
+            </div>
+
+            <div>
+                <p class="color" >color</p>
+                <input class="btn" type="text" name="color"/>
+            </div>
+
+            <div>
+                <p class="branches" >branches</p>
+                <input class="btn" type="text" name="branches" />
+                <div class="branchesMenu menu"></div>
+            </div>
+        </div>  <!-- inputs-container -->
+        
+        <button class="btn" >Update</button>
+    </div>
+
+    
+    <script>
+        var tableName = localStorage.getItem("tableName");
+        document.querySelector(".title").innerText = tableName;
+        
+        window.onload = async () => {
+            await fillWithOldData();
+
+            // getting the keys
+            let keys = [];
+            let pTags = document.querySelectorAll(".inputs-container div p");
+            pTags.forEach(tag => {
+                keys.push(tag.className);
+            });
+            
+            // adding the functionality to the update button
+            var button = document.querySelector("button.btn");
+            button.onclick= async () => {
+                let values = [];
+                // getting the values from the input fields
+                let inputFields = document.querySelectorAll(".inputs-container input");
+                inputFields.forEach(input => {
+                    // for the inputs which must be an array of strings when they be sent (false means there aren't any)
+                    if (input.name == "branches" || input.name == "owner_phone") {
+                        let arr = input.value.split(",");
+                        arr = arr.map(value => {return value.trim()});
+                        values.push(arr);
+                        return;
+                    }
+                    else if (input.value.includes(",")) {
+                       throw Error(`The ${input.name} are not allowed to be an array. Remove the comma`); 
+                    }
+                    else if (input.name == "car") {
+                        // because the car field is an id and when the user copy the id they copies extra characters like "\\t" because of the expanding of the cells
+                        input.value = input.value.trmi();
+                    }
+                    values.push(input.value);
+                });
+
+                // making an object from two arrays, keys and values
+                var result = keys.reduce((obj, key, index) => {
+                    obj[key] = values[index];
+                    return obj;
+                }, {});
+                
+                console.log("Result: \n",result);
+                try {
+                    let e = await UI.fetchData(`/api/${tableName}/${localStorage.getItem("id")}`, "PUT", localStorage.getItem("token") , result);
+                    await UI.redirect(`/${tableName}`);
+                }
+                catch(ex) {
+                    h5Error(ex.message);
+                }
+            };
+
+            // adding dropdown menu to branches field
+            function addBranchId(value) {
+                // i want to add multi branches
+                let inputField = document.querySelector("div p.branches + input");
+                if (inputField.value.length != 0)
+                    inputField.value += ` , ${value}`;
+                else {
+                    inputField.value = value;
+                }
+            }
+            UI.createDropMenu("/api/branches", ".branchesMenu", "div p.branches + input", "name", "_id", addBranchId);
+
+        };  // window.onload
+    </script>
+
+
+    <!-- functions section -->
+    <script>
+        async function fillWithOldData() {
+            let oldObject = await UI.fetchData(`/api/${tableName}/${localStorage.getItem("id")}`, "GET", localStorage.getItem("token"));
+            document.querySelector(`.inputs-container div p.number + input`).value = oldObject.number;
+            document.querySelector(`.inputs-container div p.model + input`).value = oldObject.model;
+            document.querySelector(`.inputs-container div p.color + input`).value = oldObject.color;
+            document.querySelector(`.inputs-container div p.owner_phone + input`).value = oldObject.owner_phone;
+
+            // for branches
+            let branchesArr = [];
+            oldObject.branches.forEach(branch => {
+                branchesArr.push(branch._id);
+            });
+            branchesArr.join(" , ");
+            document.querySelector(`.inputs-container div p.branches + input`).value = branchesArr;
+        }
+
+        function h5Error(message, mode = "error") {
+            let error = document.querySelector(".error");
+            error.innerText = message;
+            if (mode == "warning")
+            error.style.color = "#edae00";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <!-- JS file -->
+    <!-- (!) the src here will be as a GET request to the API -->
+    <script src="./assets/js/UI.js" ></script>
+
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/global-rules.css">
+    <link rel="stylesheet" href="./assets/css/welcome.css">
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>Welcome To Fix My Car Mangemanet System</h1>
+        </div>
+
+        <h5 class="error"></h5>
+
+
+        <div class="login-form"> <!-- Do Not transfer this div to form or the auth method will be corrupted -->  
+            <div>
+                <p>Email</p>
+                <input class="email" type="email" name="email" required />
+            </div>
+        
+            <div>
+                <p>Password</p>
+                <input class="password" type="password" name="password" required />
+            </div>
+        
+            <button class="login btn">Login</button>    
+        </div>
+    </div>
+    
+    
+    <script>
+        var button = document.querySelector(".login");
+        button.addEventListener("click", async () => {
+            try {
+                let email = document.querySelector("input[type='email']").value;
+                let password = document.querySelector("input[type='password']").value;
+                console.log(email, password);
+                let result = await UI.auth(email, password);
+                console.log(localStorage.getItem("token"));
+                await UI.redirect("/tables-page.html" , save = true);
+            } catch(ex) {
+                h5Error(ex.message);
+            }
+        });
+
+
+        function h5Error(message, mode = "error") {
+            let error = document.querySelector(".error");
+            error.innerHTML = error.innerText + `<br>${message}`;
+            if (mode == "warning"){
+                error.style.color = "#edae00";
+            }
+        }
+    </script>
+
+<!-- somar@gmail.com -->
+<!-- somarjaber -->
+
+</body>
+</html>

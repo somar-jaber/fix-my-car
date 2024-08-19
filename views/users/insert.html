@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - Insert</title>
+    <!-- CSS fiels -->
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/global-rules.css">
+
+    <link rel="stylesheet" href="./assets/css/insert.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title" ></h1>
+        <h5 class="error" style="color: var(--red);"></h5>
+
+        <div class="inputs-container" >
+            <div>
+                <p class="workerId" >worker Id</p>
+                <input class="btn" type="text" name="workerId" />
+                <div class="workersMenu menu"></div>
+            </div>
+
+            <div>
+                <p class="name" >name</p>
+                <input class="btn" type="text" name="name" />
+            </div>
+
+            <div>
+                <p class="email" >email</p>
+                <input class="btn" type="text" name="email" />
+            </div>
+
+            <div>
+                <p class="password" >password</p>
+                <input class="btn" type="text" name="password" />
+            </div>
+
+            <div>
+                <p class="isAdmin" >is Admin</p>
+                <input class="btn" type="text" name="isAdmin"/>
+            </div>
+        </div>  <!-- inputs-container -->
+        
+        <button class="btn" >Insert</button>
+    </div>
+
+    
+    <script>
+        var tableName = localStorage.getItem("tableName");
+        document.querySelector(".title").innerText = tableName;
+        
+        window.onload = async () => {
+            // getting the keys
+            let keys = [];
+            let pTags = document.querySelectorAll(".inputs-container div p");
+            pTags.forEach(tag => {
+                keys.push(tag.className);
+            });
+            
+            // adding the functionality to the Insert button
+            var button = document.querySelector("button.btn");
+            button.onclick= async () => {
+                let values = [];
+                // getting the values from the input fields
+                let inputFields = document.querySelectorAll(".inputs-container input");
+                inputFields.forEach(input => {
+                    // for the inputs which must be a string array when they be sent
+                    if (false) {
+                        let arr = input.value.split(",");
+                        arr = arr.map(value => {return value.trim()});
+                        values.push(arr);
+                        return;
+                    }
+                    else if (input.value.includes(",")) {
+                       throw Error(`The ${input.name} are not allowed to be an array. Remove the comma`); 
+                    }
+                    values.push(input.value);
+                });
+
+                // making an object from the two arrays, keys and values
+                var result = keys.reduce((obj, key, index) => {
+                    obj[key] = values[index];
+                    return obj;
+                }, {});
+                
+                console.log(result);
+                try{
+                    // we only using this variable to catch the error. becuase without it the error will not be catched  
+                    let e = await UI.fetchData(`/api/${tableName}`, "POST", localStorage.getItem("token") , result);
+                    console.log(e);
+                    await UI.redirect(`/${tableName}/`);
+                }
+                catch(ex) {
+                    h5Error(ex.message);
+                }
+            };
+
+
+            // adding dropdown menu to worker field
+            function addWorkerId(value) {
+                document.querySelector("div p.workerId + input").value = value;
+            }
+            UI.createDropMenu("/api/workers", ".workersMenu", "div p.workerId + input", "f_name", "_id", addWorkerId);
+
+
+        };  // window.onload
+    </script>
+
+    <script>
+        function h5Error(message, mode = "error") {
+            let error = document.querySelector(".error");
+            error.innerText = message;
+            if (mode == "warning")
+            error.style.color = "#edae00";
+        }
+    </script>
+</body>
+</html>

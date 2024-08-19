@@ -1,0 +1,28 @@
+.main-container {
+    display: flex;
+    height: 100vh;
+}
+
+.side-nav {
+    /* padding: 40px; */
+    background-color: var(--black, black);
+    width: 6%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+}
+
+i {
+    color: white;
+    font-size: 22px;
+    margin: 10px;
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+iframe {
+    width: 100%;
+}

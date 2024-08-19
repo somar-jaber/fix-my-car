@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <title>Document</title>
+    <!-- Js file -->
+    <!-- (!) the src here will be as a GET request to the API. and even the href in anchor tags or any thing that is releated to links -->
+    <script src="./assets/js/UI.js"></script>
+
+    <!-- CSS files -->
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/main-container.css">
+
+</head>
+<body>
+    <div class="main-container">
+        <nav class="side-nav" >
+            <i class="fa-solid fa-arrow-left back"></i>
+            <i class="fa-solid fa-table tables"></i>
+            <i class="fas fa-chart-pie statistics"></i>
+            <i class="fa-solid fa-right-from-bracket logout" style="transform: rotate(180deg);"></i>      
+        </nav>
+
+        <iframe class="frame"></iframe>
+    </div>
+    
+    <script>
+        localStorage.setItem("token", "");
+        localStorage.setItem("pageNumber", 0);
+        localStorage.setItem("stack", "/welcome.html");
+        UI.redirect("/welcome.html" , save = false);
+    </script>
+    <script src="/assets/js/main.js"></script>
+
+</body>
+</html>
+
+<!-- 
+    Charlie Display, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Noto Sans, Ubuntu, Droid Sans, Helvetica Neue, sans-serif
+-->

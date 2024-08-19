@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branches - index</title>
+    <!-- JS file -->
+    <!-- (!) the src here will be as a GET request to the API -->
+    <!-- <script src="/assets/js/UI.js"></script> -->
+
+    <!-- CSS fiels -->
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/global-rules.css">
+    
+    <link rel="stylesheet" href="./assets/css/CRUD-page.css">
+</head>
+<body>
+    <div class="container">
+        <div class="head" >
+            <h1 class="title" >branches</h1>
+            <div>
+                <i class="fa-solid fa-arrow-left"></i>
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+        </div>
+        <h5 class="error"></h5>
+
+        <table class="data-table">
+            <thead>
+                <tr class="col-names">
+                    <th class="_id" >_id</th>
+                    <th class="name" >name</th>
+                    <th class="location" >location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- <tr>
+                    <td>value</td>
+                    <td>value</td>
+                </tr> -->
+            </tbody>
+        </table>
+
+        <div class="panel">
+            <button class="btn insert" >Insert</button>
+            <button class="btn update" >Update</button>
+            <button class="btn delete" >Delete</button>
+        </div>
+    </div>
+
+    <script>
+        // main //
+        // This will be used to stop rightArrow functionality
+        var controller = new AbortController();
+
+        window.onload = async function() {
+            try {
+                dataArray = await UI.fetchData(`/api/${tableName}?pageNumber=${localStorage.getItem("pageNumber")}&size=${UI.pageSize}`, "GET", localStorage.getItem("token"));
+                
+                if (dataArray.length == 0){
+                    h5Error("There is no more data", mode = "warning");
+                    controller.abort();
+                }
+    
+                wantedCols = [];
+                ths = document.querySelectorAll("th").forEach(head => {
+                    wantedCols.push(head.className);
+                });
+    
+                console.log(wantedCols);
+    
+                let e = await appendData(dataArray, wantedCols);
+            } catch (ex) {
+                h5Error(ex.message);
+            } finally {
+                // To expand the td tags on click
+                var tds = document.querySelectorAll("td");
+                tds.forEach(function(td) {
+                    td.addEventListener("click", function() {
+                        this.classList.toggle("expanded");
+                    });
+                });
+    
+                // add "selected" class when click on a row.
+                var trs = document.querySelectorAll("tr");
+                console.log(trs);
+                trs.forEach(tr => {
+                    // execlude the Heading row
+                    if (tr.classList.contains("col-names"))  return;
+                    tr.addEventListener("click", () => {
+                        // if the row already selected so it will be unselected
+                        if (tr.classList.contains("selected")) {
+                            tr.classList.remove("selected");
+                            return;
+                        }
+    
+                        // removing the "selected" class from other tr tags
+                        trs.forEach(OtherTr => {
+                            OtherTr.classList.remove("selected");
+                        });
+                        // adding the "selected" class to the current one.
+                        tr.classList.add("selected");
+                    });
+                });
+            }  // finally
+        }  // window.onload
+
+        // window.addEventListener('load', async function() {
+        //     await displayData();
+        // });
+    </script>
+
+    <script>
+        function appendData(dataArray, wantedCols) {
+            let dataTableBody = document.querySelector(".data-table tbody");
+            // the dataArray is an Array of JSObjects
+            dataArray.forEach(object => {
+                // making a table row to catch the values
+                let tr = document.createElement("tr");
+
+                for (var key in object) {
+                    let str = [];
+                    // filtering the unwanted fields
+                    if (!wantedCols.includes(key))
+                        continue;
+
+                    // for "repairs" field
+                    if (key == "repairs") {
+                        object[key].forEach(obj => {
+                            str.push(obj.id_number);
+                        });
+                        object[key] = str.join(" , ");
+                    }
+                    
+                    // only for strings arrays
+                    if (Array.isArray(object[key])) {
+                        if (typeof object[key][0] != "string")  continue;  
+                        object[key] = object[key].join(" , ");
+                    }
+        
+                    let td = document.createElement("td");
+                    td.innerText = object[key];
+
+                    tr.appendChild(td);
+                }
+
+                dataTableBody.appendChild(tr);
+            });
+        };
+
+        function h5Error(message, mode = "error") {
+            let error = document.querySelector(".error");
+            error.innerHTML = error.innerText + `<br>${message}`;
+            if (mode == "warning"){
+                error.style.color = "#edae00";
+            }
+        }
+    </script>
+
+    <!-- This JS script tag for the panel of buttons -->
+    <script>
+        var insert = document.querySelector(".panel .insert");
+        insert.addEventListener("click", () => {
+            UI.redirect(`/${localStorage.getItem("tableName")}/insert.html`);
+        });
+
+        var update = document.querySelector(".panel .update");
+        update.addEventListener("click", async () => {
+            var id = document.querySelector(".selected td:first-of-type");
+            if (id == null) {
+                var error = document.querySelector("h5.error").innerText = "Please  select  a  row";
+            }
+            id = id.innerText;
+            localStorage.setItem("id", id);
+            UI.redirect(`/${localStorage.getItem("tableName")}/update.html`);
+        });
+
+        var del = document.querySelector(".panel .delete");
+        del.addEventListener("click" , async () => {
+            try {
+                var id = document.querySelector(".selected td:first-of-type");  // the first td tag is always the ID
+                if (id == null)
+                    var error = document.querySelector("h5.error").innerText = "Please  select  a  row";
+                id = id.innerText;
+                await UI.fetchData(`/api/${tableName}/${id}`, "DELETE", localStorage.getItem("token"));
+                await UI.redirect(`/${tableName}`);
+            } catch (ex) {
+                h5Error(ex.message);
+            }
+        });
+
+        var rightArrow = document.querySelector("i.fa-arrow-right");
+        rightArrow.addEventListener("click", async () => {
+            // To remove the listener after a specific condition (e.g., 50 clicks):
+            if (controller.signal.aborted) {
+                button.removeEventListener('click', handler);
+            }
+
+            let n = parseInt(localStorage.getItem("pageNumber"));
+            localStorage.setItem("pageNumber", n + 1);
+            await UI.redirect(`/${tableName}`);
+        });
+
+        var leftArrow = document.querySelector("i.fa-arrow-left");
+        leftArrow.addEventListener("click", async () => {
+            let n = parseInt(localStorage.getItem("pageNumber"));
+            if (n == 1) {
+                h5Error("You have reached page 0. no more back forward" , mode = "warning");
+                return;
+            }
+            localStorage.setItem("pageNumber", n - 1);
+            await UI.redirect(`/${tableName}`);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car - Update</title>
+    <!-- CSS fiels -->
+    <link rel="stylesheet" href="./assets/css/normalize.css">
+    <link rel="stylesheet" href="./assets/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/global-rules.css">
+
+    <link rel="stylesheet" href="./assets/css/insert.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title" ></h1>
+        <h5 class="error" style="color: var(--red);"></h5>
+
+        <div class="inputs-container" >
+            <div>
+                <p class="description" >description</p>
+                <input class="btn" type="text" name="description"/>
+            </div>
+
+            <div>
+                <p class="costs" >costs</p>
+                <input class="costs btn" type="text" name="costs" />
+            </div>
+
+            <div>
+                <p class="date" >date</p>
+                <input class="btn" type="text" name="date"/>
+            </div>
+
+            <div>
+                <p class="workers" >workers</p>
+                <input class="btn" type="text" name="workers"/>
+                <div class="workersMenu menu"></div>
+            </div>
+
+            <div>
+                <p class="car" >car</p>
+                <input class="btn" type="text" name="car"/>
+                <div class="carsMenu menu"></div>
+            </div>
+
+            <div>
+                <p class="publishedFrom" >published from</p>
+                <input class="btn" type="text" name="publishedFrom"/>
+                <div class="branchesMenu menu"></div>
+            </div>
+        </div>  <!-- inputs-container -->
+        
+        <button class="btn" >Update</button>
+    </div>
+
+    
+    <script>
+        var tableName = localStorage.getItem("tableName");
+        document.querySelector(".title").innerText = tableName;
+        
+        window.onload = async () => {
+            await fillWithOldData();
+
+            // getting the keys
+            let keys = [];
+            let pTags = document.querySelectorAll(".inputs-container div p");
+            pTags.forEach(tag => {
+                keys.push(tag.className);
+            });
+            
+            // adding the functionality to the update button
+            var button = document.querySelector("button.btn");
+            button.onclick= async () => {
+                let values = [];
+                // getting the values from the input fields
+                let inputFields = document.querySelectorAll(".inputs-container input");
+                inputFields.forEach(input => {
+                    // for the inputs which must be an array when they be sent (false means there aren't any)
+                    if (input.name == "costs") {
+                        let tempArr = [];
+
+                        let arr = input.value.split(",");
+                        // making the costs objects and pushing them into an array
+                        arr.forEach(cost => {
+                            cost = cost.trim().split("(");
+                            cost[1] = cost[1].replace(")", "");
+                            obj = {
+                                "serviceName" : cost[0],
+                                "price": cost[1]
+                            }
+                            tempArr.push(obj);
+                        });
+                        values.push(tempArr);
+                        return;
+                    }
+                    // for the inputs which must be an array of strings when they be sent (false means there aren't any)
+                    else if (input.name == "workers") {
+                        let arr = input.value.split(",");
+                        arr = arr.map(value => {return value.trim()});
+                        values.push(arr);
+                        return;
+                    }
+                    else if (input.value.includes(",") && input.name != "date") {
+                       throw Error(`The ${input.name} are not allowed to be an array. Remove the comma`); 
+                    }
+                    values.push(input.value);
+                });
+
+                // making an object from two arrays, keys and values
+                var result = keys.reduce((obj, key, index) => {
+                    obj[key] = values[index];
+                    return obj;
+                }, {});
+                
+                console.log("Result: \n", result);
+                try {
+                    let e = await UI.fetchData(`/api/${tableName}/${localStorage.getItem("id")}`, "PUT", localStorage.getItem("token") , result);
+                    await UI.redirect(`/${tableName}/`);
+                }
+                catch(ex) {
+                    h5Error(ex.message);
+                }
+            };
+
+
+            // adding dropdown menu to publishedFrom field
+            function addBranchId(value) {
+                document.querySelector("div p.publishedFrom + input").value = value;
+            }
+            UI.createDropMenu("/api/branches", ".branchesMenu", "div p.publishedFrom + input", "name", "_id", addBranchId);
+            
+
+            // adding dropdown menu to car field
+            function addCarId(value) {
+                document.querySelector("div p.car + input").value = value;
+            }
+            UI.createDropMenu("/api/cars", ".carsMenu", "div p.car + input", "number", "_id", addCarId);
+            
+
+            // adding dropdown menu to workers field
+            function addWorkerId(value) {
+                // i want to add multi workers
+                let inputField = document.querySelector("div p.workers + input");
+                if (inputField.value.length != 0)
+                    inputField.value += ` , ${value}`;
+                else {
+                    inputField.value = value;
+                }
+            }
+            UI.createDropMenu("/api/workers", ".workersMenu", "div p.workers + input", "f_name", "_id", addWorkerId);
+
+
+        };  // window.onload
+    </script>
+
+
+    <!-- functions section -->
+    <script>
+        async function fillWithOldData() {
+            let oldObject = await UI.fetchData(`/api/${tableName}/${localStorage.getItem("id")}`, "GET", localStorage.getItem("token"));
+            document.querySelector(`.inputs-container div p.description + input`).value = oldObject.description;
+            document.querySelector(`.inputs-container div p.date + input`).value = oldObject.date;
+            document.querySelector(`.inputs-container div p.car + input`).value = oldObject.car;
+            document.querySelector(`.inputs-container div p.publishedFrom + input`).value = oldObject.publishedFrom._id;
+            
+            document.querySelector(`.inputs-container div p.workers + input`).value = oldObject.workers.join(" , ");
+
+            let costsArr = [];
+            oldObject.costs.forEach(obj => {
+                costsArr.push(`${obj.serviceName}(${obj.price})`);
+            });
+            costsArr = costsArr.join(" , ");
+            document.querySelector(`.inputs-container div p.costs + input`).value = costsArr;
+        }
+
+        function h5Error(message, mode = "error") {
+            let error = document.querySelector(".error");
+            error.innerText = message;
+            if (mode == "warning")
+            error.style.color = "#edae00";
+        }
+    </script>
+</body>
+</html>

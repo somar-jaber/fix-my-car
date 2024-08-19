@@ -1,0 +1,121 @@
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'GoodTimes';
+    src: url("../fonts/good\ times\ rg.otf");
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    /* font-family: "Work Sans", sans-serif; */
+    font-family: "GoodTimes", "Work Sans", sans-serif;
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+/* small */
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+/* medium */
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+/* large */
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px;
+    }
+}
+
+
+/* root variables */
+:root {
+    --red : #fa4753;
+    --black : #17181c;
+    --gray: #9BA5C9;
+}
+
+
+/* components */
+.special-heading {
+    text-align: center;
+    margin: 0;
+    font-weight: 800;
+    font-size: 100px;
+    color: #ebeced;
+    letter-spacing: -3px;
+}
+
+.special-heading + p {
+    margin: -30px 0 0;
+    font-size: 20px;
+    text-align: center;
+    color: #777;
+}
+@media (max-width: 767px) {
+    .special-heading {
+        font-size: 60px;
+    }
+    .special-heading + p {
+        margin-top: -20px;
+        font-size: initial;
+    }
+}
+
+
+.btn {
+
+    display: inline-block;
+    padding: 10px 20px;    /* 10px 20px or 20px 40px */
+    font-size: 16px;       /* 16px or 20px */
+    border-radius: 20px;   /* 20px or 30px */
+    background-color: white;
+    color: var(--black);
+    text-align: center;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+}
+
+.btn:focus,
+.btn:hover {
+    box-shadow: 5px 5px 8px rgba(250, 71, 83, 0.4);
+}
+
+
+.menu {
+    display: none;
+}
+
+.menu.active {
+    border: 1px solid var(--gray, black);
+    display: block;
+    border-radius: 10px;
+    margin-top: 30px;
+    margin-down: 30px;
+}
+
+.menu.active p {
+    padding: 15px;
+    margin-top: 5px;
+    margin-down: 5px;
+}
+
+.menu.active p:hover {
+    background-color: var(--gray, gray);
+}
